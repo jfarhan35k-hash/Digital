@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Awareness Day</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Polish libraries (CDN, ~33 KB total) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+  <!-- Global sound/voice toggles -->
+  <div class="audio-toggles">
+    <button id="btnMute"  class="audio-btn" title="Toggle sound effects">&#x1F50A;</button>
+    <button id="btnVoice" class="audio-btn" title="Toggle voice narration">&#x1F5E3;&#xFE0F;</button>
+  </div>
+
+  <div id="app">
+
+    <!-- Screen 1: Splash -->
+    <section id="screen-splash" class="screen active">
+      <div class="splash-content">
+        <div class="splash-logo">DAD</div>
+        <div class="splash-sub">DIGITAL AWARENESS DAY</div>
+        <div class="splash-loading"><div class="splash-loading-bar"></div></div>
+      </div>
+    </section>
+
+    <!-- Screen 2: Welcome -->
+    <section id="screen-welcome" class="screen">
+      <div class="welcome-content">
+        <h1 class="title-anim">DIGITAL AWARENESS</h1>
+        <div class="tagline">LEVEL UP YOUR WORKFLOW</div>
+        <div class="form-card">
+          <h2>Enter Your Credentials</h2>
+          <input id="inpName" type="text" placeholder="Your Name" autocomplete="off" />
+          <input id="inpDept" type="text" placeholder="Department" autocomplete="off" />
+          <button id="btnStart" class="btn-primary pulse"><span>Start Mission</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 3: Mission select -->
+    <section id="screen-cards" class="screen">
+      <h2 class="screen-title">Choose Your Mission</h2>
+      <p class="screen-subtitle">Choose your mission</p>
+      <div class="cards-container" id="cardsContainer"></div>
+    </section>
+
+    <!-- Screen 4: Scenario briefing -->
+    <section id="screen-scenario" class="screen">
+      <div class="scenario-reveal">
+        <div class="briefing-header">
+          <span class="scenario-badge" id="scenarioBadge">MISSION</span>
+          <h2 id="scenarioTitle">Mission Title</h2>
+        </div>
+        <div class="scenario-scene" id="scenarioScene"></div>
+        <div class="scenario-box">
+          <h3>Mission Briefing</h3>
+          <div id="scenarioText"></div>
+        </div>
+        <div class="scenario-painpoints">
+          <h3>Pain Points</h3>
+          <ul id="scenarioPains"></ul>
+        </div>
+        <div class="scenario-actions">
+          <button id="btnBeginMission" class="btn-primary"><span>Begin Mission</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 5: Game -->
+    <section id="screen-game" class="screen">
+      <div class="game-header">
+        <div class="game-info">
+          <div class="info-block">
+            <span class="info-label">Player</span>
+            <span class="info-value" id="hudName">--</span>
+          </div>
+          <div class="info-block">
+            <span class="info-label">Dept</span>
+            <span class="info-value" id="hudDept">--</span>
+          </div>
+          <div class="info-block">
+            <span class="info-label">Round</span>
+            <span class="info-value"><span class="round-badge" id="hudRound">R1</span></span>
+          </div>
+          <div class="info-block">
+            <span class="info-label">Mission</span>
+            <span class="info-value" id="hudMission">--</span>
+          </div>
+        </div>
+        <div class="timer-wrapper" id="timerWrapper">
+          <svg class="timer-ring" viewBox="0 0 90 90">
+            <circle class="timer-bg"       cx="45" cy="45" r="40"/>
+            <circle class="timer-progress" cx="45" cy="45" r="40" id="timerProgress"/>
+          </svg>
+          <div class="timer-text" id="timerText">5:00</div>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div class="toolbox" id="toolbox">
+          <h3>Toolbox</h3>
+          <p class="toolbox-hint">Drag tools to build your solution</p>
+          <div id="toolboxList"></div>
+        </div>
+        <div class="canvas-area">
+          <div class="canvas-header">
+            <h3>Your Workflow</h3>
+            <span class="tile-counter" id="tileCounter">0 / 8</span>
+          </div>
+          <div class="drop-zone drop-zone-phased" id="dropZone">
+            <div class="phase-box" data-phase="detect" data-index="0">
+              <div class="phase-box-head">
+                <span class="phase-step">1</span>
+                <span class="phase-icon">&#x1F50D;</span>
+                <div class="phase-titles">
+                  <div class="phase-title">DETECT</div>
+                  <div class="phase-tag">Spot the issue</div>
+                </div>
+                <span class="phase-status">AWAITING</span>
+              </div>
+              <div class="phase-slot"><div class="phase-hint">Drop a DETECT tool here</div></div>
+            </div>
+            <div class="phase-box" data-phase="analyze" data-index="1">
+              <div class="phase-box-head">
+                <span class="phase-step">2</span>
+                <span class="phase-icon">&#x1F9E0;</span>
+                <div class="phase-titles">
+                  <div class="phase-title">ANALYZE</div>
+                  <div class="phase-tag">Understand the cause</div>
+                </div>
+                <span class="phase-status">LOCKED</span>
+              </div>
+              <div class="phase-slot"><div class="phase-hint">Drop an ANALYZE tool here</div></div>
+            </div>
+            <div class="phase-box" data-phase="act" data-index="2">
+              <div class="phase-box-head">
+                <span class="phase-step">3</span>
+                <span class="phase-icon">&#x26A1;</span>
+                <div class="phase-titles">
+                  <div class="phase-title">ACT</div>
+                  <div class="phase-tag">Take action</div>
+                </div>
+                <span class="phase-status">LOCKED</span>
+              </div>
+              <div class="phase-slot"><div class="phase-hint">Drop an ACT tool here</div></div>
+            </div>
+            <div class="phase-box" data-phase="integrate" data-index="3">
+              <div class="phase-box-head">
+                <span class="phase-step">4</span>
+                <span class="phase-icon">&#x1F517;</span>
+                <div class="phase-titles">
+                  <div class="phase-title">INTEGRATE</div>
+                  <div class="phase-tag">Close the loop</div>
+                </div>
+                <span class="phase-status">LOCKED</span>
+              </div>
+              <div class="phase-slot"><div class="phase-hint">Drop an INTEGRATE tool here</div></div>
+            </div>
+            <div class="drop-hint" id="dropHint" style="display:none;">Drop tools here to build your solution</div>
+            <div class="drop-hint" id="dropHint">Drop tools here to build your solution</div>
+          </div>
+          <button id="btnSubmit" class="btn-submit" disabled>Submit Solution</button>
+                </div>
+        <aside class="pain-sidebar" id="painSidebar">
+          <div class="pain-head">
+            <span class="pain-icon">&#x1F3AF;</span>
+            <h4>Pain Points</h4>
+          </div>
+          <ul id="painSidebarList" class="pain-list"></ul>
+          <div class="pain-tip">&#x1F4A1; Match each tool to the right phase to solve these pains.</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Screen 6: Dashboard -->
+    <section id="screen-dashboard" class="screen">
+      <div class="dashboard-content">
+        <h2 class="dash-title">Mission Complete</h2>
+        <div class="rank-badge" id="rankBadge">ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¸ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</div>
+        <div id="finalPlayerName" class="final-player-name">Player</div>
+
+        <div class="score-grand">
+          <span class="score-label">Final Score</span>
+          <span class="score-value" id="finalScore">0</span>
+        </div>
+
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+
+        <div class="learn-section">
+          <h3>Suggested Optimal Workflow</h3>
+          <div id="optimalTools"></div>
+      </div>
+
+        <div class="learn-section" id="wrongSection" style="display:none;">
+          <h3>&#x26A0;&#xFE0F; Tools You Picked But Should Not Have</h3>
+          <div id="wrongTools"></div>
+        </div>
+
+        <div class="leaderboard">
+          <h3>Top 15 Leaderboard</h3>
+          <ol id="leaderList"></ol>
+        </div>
+
+        <div class="learn-section" id="trophySection">
+          <h3>&#x1F3C6; Trophy Case</h3>
+          <div id="trophyCase" class="trophy-case"></div>
+        </div>
+
+        <div class="dash-actions">
+          <button id="btnReplay"       class="btn-primary"><span>Play Again</span></button>
+          <button id="btnChangePlayer" class="btn-secondary">Change Player</button>
+          <button id="btnResetBoard"   class="btn-danger">Reset Leaderboard</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/fx.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/scenes.js"></script>
+
+  <!-- Universal Restart Button -->
+  <button id="btnRestart" class="btn-restart" title="Restart Game" hidden>
+    <span class="restart-icon">&#x27F2;</span>
+    <span class="restart-label">Restart</span>
+  </button>
+
+  <!-- Restart Confirm Modal -->
+  <div id="restartConfirm" class="restart-modal" hidden>
+    <div class="restart-box">
+      <div class="restart-icon-big">&#9888;</div>
+      <h3>Restart the game?</h3>
+      <p>Your current mission progress will be lost.<br/>Leaderboard and achievements will be preserved.</p>
+      <div class="restart-actions">
+        <button id="restartCancel" class="btn-ghost">Cancel</button>
+        <button id="restartConfirmYes" class="btn-primary">Yes, Restart</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
